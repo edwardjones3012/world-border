@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Boundary Pixelated
+  m_Shader: {fileID: 4800000, guid: dc4c7dfebbdf3cb4f8d8062347ed5a08, type: 3}
+  m_ShaderKeywords: _HORIZONTALDIRECTION_LEFT _VERTICALDIRECTION_DOWN
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColourEnd: 0.181
+    - _ColourStart: 0.156
+    - _HorizontalDirection: 0
+    - _HorizontalDistortion: 0
+    - _LineWidth: 2
+    - _MaxColor: 0.8
+    - _MaxDistance: 15
+    - _MinColor: 0.2
+    - _MinDistance: 0
+    - _NearPoint: 1
+    - _Pixelation: 8
+    - _Pixellation: 256
+    - _Speed: 3
+    - _Value: 1
+    - _VerticalDirection: 1
+    - _Wave: 0
+    - _XWave: 0
+    - _YWave: 0
+    m_Colors:
+    - _ColourA: {r: 0, g: 0.765018, b: 1, a: 1}
+    - _ColourB: {r: 0, g: 0, b: 0, a: 1}
+    - _DangerColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FarColor: {r: 0.19215685, g: 0.61718, b: 1, a: 1}
+    - _NearColor: {r: 1, g: 0.25, b: 0.35882366, a: 1}
+    - _StandardColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
