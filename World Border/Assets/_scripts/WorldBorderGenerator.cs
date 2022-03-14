@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public static class WorldBorderGenerator
@@ -16,6 +17,8 @@ public static class WorldBorderGenerator
 
     public static void Generate(BorderProperties borderProperties)
     {
+        RemoveOtherBorders();
+
         CreateMesh(borderProperties.Height, borderProperties.Radius);
 
         Mesh _mesh = new Mesh();
@@ -30,6 +33,9 @@ public static class WorldBorderGenerator
 
         GameObject border = new GameObject("World Border");
         border.transform.position = Vector3.zero;
+
+        CreateTag("World Border");
+        border.tag = "World Border";
 
         MeshFilter meshFilter = border.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = border.AddComponent<MeshRenderer>();
@@ -62,6 +68,41 @@ public static class WorldBorderGenerator
     private static void CreateGameObject()
     {
 
+    }
+
+    private static void CreateTag(string tag)
+    {
+        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        SerializedProperty tagsProp = tagManager.FindProperty("tags");
+
+        bool found = false;
+        for (int i = 0; i < tagsProp.arraySize; i++)
+        {
+            SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
+            if (t.stringValue.Equals(tag))
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            tagsProp.InsertArrayElementAtIndex(0);
+            SerializedProperty n = tagsProp.GetArrayElementAtIndex(0);
+            n.stringValue = tag;
+        }
+
+        tagManager.ApplyModifiedProperties();
+    }
+
+    private static void RemoveOtherBorders()
+    {
+        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
+        foreach(GameObject border in borders)
+        {
+            GameObject.DestroyImmediate(border);
+        }
     }
 
     private static Vector2[] GenerateUVs(float height, float radius)
