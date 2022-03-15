@@ -27,6 +27,7 @@ public struct BorderProperties
         VerticalDirection = verticalDirection;
         HorizontalDirection = horizontalDirection;
     }
+
     public float Height;
     public float Radius;
     public bool Pixelated;

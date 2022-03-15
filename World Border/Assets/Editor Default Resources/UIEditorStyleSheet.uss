@@ -1,0 +1,67 @@
+* 
+{
+/*	background-color: #282C34;
+*/}
+Label 
+{
+	left: 5%;
+	justify-content: center;
+	padding-top: 1%;
+	padding-bottom: 1%;
+}
+.unity-enum-field {
+	margin-left: 10%;
+	margin-right: 10%;
+	margin-bottom: 0%;
+		margin-top: 1%;
+}
+.unity-color-field
+{
+	margin-top: 1%;
+	margin-right: 10%;
+	margin-left: 10%;
+	margin-bottom: 0%;
+}
+
+.unity-color-field__input
+{
+	margin-top: 1%;
+	margin-right: 10px;
+	margin-left: 120px;
+	margin-bottom: 0%;
+}
+
+.unity-integer-field
+{
+	margin-top: 1%;
+	margin-right: 10%;
+	margin-left: 10%;
+	margin-bottom: 0%;
+}
+IMGUIContainer 
+{
+	margin-top: 3%;
+	margin-right: 10%;
+	margin-left: 10%;
+}
+
+.unity-toggle
+{
+	margin-top: 3px;
+	margin-bottom: 3px;
+		margin-right: 10%;
+	margin-left: 10%;
+}
+
+.unity-integer-field__indent
+{
+		margin-left: 10%;
+}
+
+.label_header
+{
+	font-size: 13px;
+	-unity-font-style: bold;
+	padding-left: 2%;
+	padding-top: 30px;
+}

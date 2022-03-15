@@ -6,20 +6,10 @@ using UnityEngine;
 
 public static class WorldBorderGenerator
 {
-    //private GameObject _border;
-    //private Mesh _mesh;
-    //private MeshFilter _meshFilter;
-    //private MeshRenderer _meshRenderer;
-    //private MeshCollider _meshCollider;
-
-    //[SerializeField] private float _height;
-    //[SerializeField] private float _radius;
-
     public static void Generate(BorderProperties borderProperties)
     {
+        CreateTag("World Border");
         RemoveOtherBorders();
-
-        CreateMesh(borderProperties.Height, borderProperties.Radius);
 
         Mesh _mesh = new Mesh();
         _mesh.name = "World Border (Mesh)";
@@ -29,12 +19,9 @@ public static class WorldBorderGenerator
         _mesh.RecalculateNormals();
         _mesh.SetUVs(0, GenerateUVs(borderProperties.Height, borderProperties.Radius));
 
-        CreateGameObject();
-
         GameObject border = new GameObject("World Border");
         border.transform.position = Vector3.zero;
 
-        CreateTag("World Border");
         border.tag = "World Border";
 
         MeshFilter meshFilter = border.AddComponent<MeshFilter>();
@@ -57,17 +44,6 @@ public static class WorldBorderGenerator
         meshRenderer.sharedMaterial.SetFloat("_HorizontalDistortion", borderProperties.HorizontalDistortion);
         meshRenderer.sharedMaterial.SetFloat("_VerticalDirection", (float)borderProperties.VerticalDirection);
         meshRenderer.sharedMaterial.SetFloat("_HorizontalDirection", (float)borderProperties.HorizontalDirection);
-
-    }
-
-    private static void CreateMesh(float _height, float _radius)
-    {
-
-    }
-
-    private static void CreateGameObject()
-    {
-
     }
 
     private static void CreateTag(string tag)
@@ -124,24 +100,21 @@ public static class WorldBorderGenerator
             new Vector2(1,1),
             new Vector2(0,1),
 
-            new Vector2(0,0), // 3
-            new Vector2(1,0), // 4
-            new Vector2(0,1), // 1
-            new Vector2(1,1), // 2
+            new Vector2(0,0), 
+            new Vector2(1,0), 
+            new Vector2(0,1), 
+            new Vector2(1,1),
 
-            new Vector2(0,0), // 3
-            new Vector2(1,0), // 4
-            new Vector2(0,1), // 1
-            new Vector2(1,1), // 2
+            new Vector2(0,0),
+            new Vector2(1,0), 
+            new Vector2(0,1), 
+            new Vector2(1,1),
 
             new Vector2(0,0), // 3
             new Vector2(1,0), // 4
             new Vector2(0,1), // 1
             new Vector2(1,1), // 2
         };
-
-
-        //float _heightFactor = _height / 5;
 
         List<Vector2> uvsScaled = new List<Vector2>();
 
@@ -161,14 +134,6 @@ public static class WorldBorderGenerator
     {
         return new Vector3[]
         {
-            // replace 1 with size!!!!
-
-            // replace 1 with size!!!!
-
-            // replace 1 with size!!!!
-
-            // replace 1 with size!!!!
-
             // bottom
             new Vector3(-radius, 0, radius),
             new Vector3(radius, 0, radius),
