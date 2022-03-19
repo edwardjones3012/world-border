@@ -10,7 +10,8 @@ public struct BorderProperties
         int nearPoint, int lineWidth,
         int horizontalDistortion, 
         VerticalDirection verticalDirection, 
-        HorizontalDirection horizontalDirection)
+        HorizontalDirection horizontalDirection,
+        bool centerVertical)
     {
         Height = height;
         Radius = radius;
@@ -26,6 +27,7 @@ public struct BorderProperties
         HorizontalDistortion = horizontalDistortion;
         VerticalDirection = verticalDirection;
         HorizontalDirection = horizontalDirection;
+        CenterVertical = centerVertical;
     }
 
     public float Height;
@@ -42,4 +44,5 @@ public struct BorderProperties
     public int HorizontalDistortion;
     public VerticalDirection VerticalDirection;
     public HorizontalDirection HorizontalDirection;
+    public bool CenterVertical;
 }

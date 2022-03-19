@@ -30,7 +30,7 @@ Material:
     - _HorizontalDistortion: 0
     - _LineWidth: 3
     - _MaxColor: 0.8
-    - _MaxDistance: 15
+    - _MaxDistance: 115
     - _MinColor: 0.2
     - _MinDistance: 2
     - _NearPoint: 1
@@ -45,7 +45,7 @@ Material:
     - _ColourA: {r: 0, g: 0.765018, b: 1, a: 1}
     - _ColourB: {r: 0, g: 0, b: 0, a: 1}
     - _DangerColor: {r: 1, g: 1, b: 1, a: 1}
-    - _FarColor: {r: 0, g: 0, b: 1, a: 1}
-    - _NearColor: {r: 1, g: 0, b: 0, a: 1}
+    - _FarColor: {r: 0.1933962, g: 0.1933962, b: 1, a: 1}
+    - _NearColor: {r: 1, g: 0.1367925, b: 0.1367925, a: 1}
     - _StandardColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

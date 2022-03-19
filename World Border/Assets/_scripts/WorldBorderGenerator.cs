@@ -20,8 +20,7 @@ public static class WorldBorderGenerator
         _mesh.SetUVs(0, GenerateUVs(borderProperties.Height, borderProperties.Radius));
 
         GameObject border = new GameObject("World Border");
-        border.transform.position = Vector3.zero;
-
+        border.transform.position = borderProperties.CenterVertical ? new Vector3(0, -borderProperties.Height / 2, 0) : Vector3.zero;
         border.tag = "World Border";
 
         MeshFilter meshFilter = border.AddComponent<MeshFilter>();

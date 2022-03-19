@@ -10,27 +10,21 @@ public class WorldBorderWindow : EditorWindow
 {
     private static float _defaultHeight = 12;
     private static float _defaultRadius = 5;
-    private static Color _defaultNearColor = Color.red;
-    private static Color _defaultFarColor = Color.blue;
+    private static Color _defaultNearColor = new Color(1, 0.1367925f, 0.1367925f, 1);
+    private static Color _defaultFarColor = new Color(0.1933962f, 0.1933962f, 1, 1);
     private static float _defaultNearPoint = 1;
     private static float _defaultMinDistance = 2;
     private static float _defaultMaxDistance = 15;
-    private static bool _defaultPixelated = false;
+    private static float _defaultPixelated = 0;
     private static float _defaultPixelation = 8;
     private static float _defaultSpeed = 3;
     private static float _defaultHorizontalDistortion = 0;
     private static VerticalDirection _defaultVerticalDirection = VerticalDirection.Down;
     private static HorizontalDirection _defaultHorizontalDirection = HorizontalDirection.Left;
-    private static float _defaultLineWidth = 12;
-    private static bool _defaultCenterVertical = false;
+    private static float _defaultLineWidth = 3;
+    private static float _defaultCenterVertical = 1;
 
-    private static Dictionary<string, dynamic> defaults = new Dictionary<string, dynamic>()
-    {
-        { "_height", _defaultHeight },
-        { "_radius", _defaultRadius }
-    };
-
-    [MenuItem("Tools/ World Border")]
+    [MenuItem("Tools/ World Border Editor")]
     public static void ShowEditorWindow()
     {
         EditorWindow window = GetWindow<WorldBorderWindow>();
@@ -48,15 +42,16 @@ public class WorldBorderWindow : EditorWindow
         rootVisualElement.Add(_headerImage);
 
         // RESET BUTTON
-        Button _resetButton = new Button() { text = "Reset Values" };
+        Button _resetButton = new Button() { text = "Reset Default Values" };
         rootVisualElement.Add(_resetButton);
+        _resetButton.AddToClassList("button_top");
         _resetButton.clicked += () =>
         {
             ResetValuesToDefault();
         };
 
         // CURRENT RESET BUTTON
-        Button _currentBorderValuesButton = new Button() { text = "Get Current Border Values" };
+        Button _currentBorderValuesButton = new Button() { text = "Restore Last Generated Values" };
         rootVisualElement.Add(_currentBorderValuesButton);
         _currentBorderValuesButton.clicked += () =>
         {
@@ -71,13 +66,13 @@ public class WorldBorderWindow : EditorWindow
         //HEIGHT
         IntegerField _heightField = new IntegerField(label: "Height");
         _heightField.name = "height";
-        _heightField.value = createType == CreateType.Init ? (int)_defaultHeight : (int)PlayerPrefs.GetFloat("height"); 
+        _heightField.value = createType == CreateType.Default ? (int)_defaultHeight : (int)PlayerPrefs.GetFloat("height"); 
         rootVisualElement.Add(_heightField);
         VisualElementStyleSheetSet set = _heightField.styleSheets;
 
         // RADIUS
         IntegerField _radiusField = new IntegerField(label: "Radius");
-        _radiusField.value = createType == CreateType.Init ? (int)_defaultRadius : (int)PlayerPrefs.GetFloat("radius");
+        _radiusField.value = createType == CreateType.Default ? (int)_defaultRadius : (int)PlayerPrefs.GetFloat("radius");
         _radiusField.name = "radius";
         rootVisualElement.Add(_radiusField);
 
@@ -87,13 +82,13 @@ public class WorldBorderWindow : EditorWindow
 
         // NEAR COLOR
         ColorField _nearColorField = new ColorField("Near Color");
-        _nearColorField.value = Color.red;
+        _nearColorField.value = createType == CreateType.Default ? _defaultNearColor : ConvertToColor(PlayerPrefs.GetString("nearColor"));
         _nearColorField.name = "nearColor";
         rootVisualElement.Add(_nearColorField);
 
         // FAR COLOR
         ColorField _farColorField = new ColorField("Far Color");
-        _farColorField.value = Color.blue;
+        _farColorField.value = createType == CreateType.Default ? _defaultFarColor : ConvertToColor(PlayerPrefs.GetString("farColor"));
         _farColorField.name = "farColor";
         rootVisualElement.Add(_farColorField);
 
@@ -103,19 +98,19 @@ public class WorldBorderWindow : EditorWindow
 
         // NEAR POINT
         IntegerField _nearPointField = new IntegerField("Near Point");
-        _nearPointField.value = createType == CreateType.Init ? (int)_defaultNearPoint : (int)PlayerPrefs.GetFloat("nearPoint");
+        _nearPointField.value = createType == CreateType.Default ? (int)_defaultNearPoint : (int)PlayerPrefs.GetFloat("nearPoint");
         _nearPointField.name = "nearPoint";
         rootVisualElement.Add(_nearPointField);
 
         // MIN DISTANCE
         IntegerField _minDistanceField = new IntegerField(label: "Min Distance");
-        _minDistanceField.value = 2;
+        _minDistanceField.value = createType == CreateType.Default ? (int)_defaultMinDistance : (int)PlayerPrefs.GetFloat("minDistance");
         _minDistanceField.name = "minDistance";
         rootVisualElement.Add(_minDistanceField);
 
         // MAX DISTANCE
         IntegerField _maxDistanceField = new IntegerField(label: "Max Distance");
-        _maxDistanceField.value = 15;
+        _maxDistanceField.value = createType == CreateType.Default ? (int)_defaultMaxDistance : (int)PlayerPrefs.GetFloat("maxDistance");
         _maxDistanceField.name = "maxDistance";
         rootVisualElement.Add(_maxDistanceField);
 
@@ -125,13 +120,13 @@ public class WorldBorderWindow : EditorWindow
 
         // PIXELATED
         Toggle _pixelatedToggle = new Toggle(label: "Pixelated");
-        _pixelatedToggle.value = false;
+        _pixelatedToggle.value = createType == CreateType.Default ? GetBoolFromFloat(_defaultPixelated) : GetBoolFromFloat(PlayerPrefs.GetFloat("pixelated"));
         _pixelatedToggle.name = "pixelated";
         rootVisualElement.Add(_pixelatedToggle);
 
         // PIXELATION
         IntegerField _pixelationField = new IntegerField(label: "Pixelation");
-        _pixelationField.value = 8;
+        _pixelationField.value = createType == CreateType.Default ? (int)_defaultPixelation : (int)PlayerPrefs.GetFloat("pixelation");
         _pixelationField.visible = _pixelatedToggle.value;
         _pixelationField.name = "pixelation";
         _pixelationField.AddToClassList("unity-integer-field__indent");
@@ -140,13 +135,13 @@ public class WorldBorderWindow : EditorWindow
 
         // LINE WIDTH
         IntegerField _lineWidthField = new IntegerField(label: "Line Width");
-        _lineWidthField.value = 3;
+        _lineWidthField.value = createType == CreateType.Default ? (int)_defaultLineWidth : (int)PlayerPrefs.GetFloat("lineWidth");
         _lineWidthField.name = "lineWidth";
         rootVisualElement.Add(_lineWidthField);
 
         // HORIZONTAL DISTORTION
         IntegerField _horizontalDistortionField = new IntegerField(label: "Horizontal Distortion");
-        _horizontalDistortionField.value = 0;
+        _horizontalDistortionField.value = createType == CreateType.Default ? (int)_defaultHorizontalDistortion : (int)PlayerPrefs.GetFloat("horizontalDistortion");
         _horizontalDistortionField.name = "horizontalDistortion";
         rootVisualElement.Add(_horizontalDistortionField);
 
@@ -156,35 +151,34 @@ public class WorldBorderWindow : EditorWindow
 
         // SPEED
         IntegerField _speedField = new IntegerField(label: "Speed");
-        _speedField.value = 3;
+        _speedField.value = createType == CreateType.Default ? (int)_defaultSpeed : (int)PlayerPrefs.GetFloat("speed");
         _speedField.name = "speed";
         rootVisualElement.Add(_speedField);
 
-
-
         // could maybe use minmax field and get each end?
-
-
 
         // VERTICAL DIRECTION
         EnumField _verticalDirectionField = new EnumField(label: "Vertical Direction", VerticalDirection.Down);
         _verticalDirectionField.name = "verticalDirection";
+        _verticalDirectionField.value = createType == CreateType.Default ? _defaultVerticalDirection : (VerticalDirection)PlayerPrefs.GetFloat("verticalDirection");
         rootVisualElement.Add(_verticalDirectionField);
 
         // HORIZONTAL DIRECTION
         EnumField _horizontalDirectionField = new EnumField(label: "Horizontal Direction", HorizontalDirection.Left);
         _horizontalDirectionField.name = "horizontalDirection";
+        _horizontalDirectionField.value = createType == CreateType.Default ? _defaultHorizontalDirection : (HorizontalDirection)PlayerPrefs.GetFloat("horizontalDirection");
         rootVisualElement.Add(_horizontalDirectionField);
 
         // CENTER VERTICAL
-        Toggle _centerVertical = new Toggle(label: "Center Vertical");
-        _centerVertical.name = "centerVertical";
-        _centerVertical.value = false;
-        rootVisualElement.Add(_centerVertical);
+        Toggle _centerVerticalToggle = new Toggle(label: "Center Vertical");
+        _centerVerticalToggle.name = "centerVertical";
+        _centerVerticalToggle.value = createType == CreateType.Default ? GetBoolFromFloat(_defaultCenterVertical) : GetBoolFromFloat(PlayerPrefs.GetFloat("centerVertical"));
+        rootVisualElement.Add(_centerVerticalToggle);
 
         // GENERATE BUTTON
         Button _generateButton = new Button() { text = "Generate" };
         rootVisualElement.Add(_generateButton);
+        _generateButton.AddToClassList("button_top");
         _generateButton.clicked += () =>
         {
             PlayerPrefs.SetFloat("height", _heightField.value);
@@ -192,38 +186,68 @@ public class WorldBorderWindow : EditorWindow
             PlayerPrefs.SetFloat("pixelated", _pixelatedToggle.value == false ? 0 : 1);
             PlayerPrefs.SetFloat("pixelation", _pixelationField.value);
             PlayerPrefs.SetFloat("speed", _speedField.value);
-            //PlayerPrefs.SetFloat("nearColor", _nearColorField.value); 
-            //PlayerPrefs.SetFloat("farColor", _farColorField.value); 
+            PlayerPrefs.SetString("nearColor", ExtractRGBA(_nearColorField.value));
+            PlayerPrefs.SetString("farColor", ExtractRGBA(_farColorField.value));
             PlayerPrefs.SetFloat("minDistance", _minDistanceField.value);
             PlayerPrefs.SetFloat("maxDistance", _maxDistanceField.value);
             PlayerPrefs.SetFloat("nearPoint", _nearPointField.value);
             PlayerPrefs.SetFloat("lineWidth", _lineWidthField.value);
-            PlayerPrefs.SetFloat("horizontalDistortion", (HorizontalDirection)_horizontalDistortionField.value == HorizontalDirection.Left ? 0 : 1);
+            PlayerPrefs.SetFloat("horizontalDistortion", _horizontalDistortionField.value);
             PlayerPrefs.SetFloat("verticalDirection", (VerticalDirection)_verticalDirectionField.value == VerticalDirection.Up ? 0 : 1);
-            PlayerPrefs.SetFloat("horizontalDirection", _nearPointField.value);
-
+            PlayerPrefs.SetFloat("horizontalDirection", (HorizontalDirection)_horizontalDistortionField.value == HorizontalDirection.Left ? 0 : 1);
+            PlayerPrefs.SetFloat("centerVertical", _centerVerticalToggle.value == false ? 0 : 1);
+            
             BorderProperties borderProperties = new BorderProperties(height: _heightField.value, radius: _radiusField.value,
                 pixelated: _pixelatedToggle.value, pixelation: _pixelationField.value,
                 speed: _speedField.value, nearColor: _nearColorField.value, farColor: _farColorField.value,
                 minDistance: _minDistanceField.value, maxDistance: _maxDistanceField.value, nearPoint: _nearPointField.value,
                 lineWidth: _lineWidthField.value, horizontalDistortion: _horizontalDistortionField.value,
                 verticalDirection: (VerticalDirection)_verticalDirectionField.value,
-                horizontalDirection: (HorizontalDirection)_horizontalDirectionField.value);
+                horizontalDirection: (HorizontalDirection)_horizontalDirectionField.value,
+                centerVertical: _centerVerticalToggle.value);
             WorldBorderGenerator.Generate(borderProperties);
         };
+    }
+
+    private bool GetBoolFromFloat(float val)
+    {
+        return val == 1;
+    }
+
+    private string ExtractRGBA(Color col)
+    {
+        string color = col.r.ToString() + "-" + col.g.ToString() + "-" + col.b.ToString() + "-" + col.a.ToString() + "-";
+        return color;
+    }
+
+    private Color ConvertToColor(string rgba)
+    {
+        string[] splitRGBA = rgba.Split('-');
+        string r = splitRGBA[0].ToString();
+        float.TryParse(r, out var red);
+
+        string g = splitRGBA[1].ToString();
+        float.TryParse(g, out var green);
+
+        string b = splitRGBA[2].ToString();
+        float.TryParse(b, out var blue);
+
+        string a = splitRGBA[3].ToString();
+        float.TryParse(a, out var alpha);
+
+        return new Color(red, green, blue, alpha);
     }
 
     public void CreateGUI()
     {
         StyleSheet styleSheet = (StyleSheet)EditorGUIUtility.Load("UIEditorStyleSheet.uss");
         rootVisualElement.styleSheets.Add(styleSheet);
-        CreateFields(CreateType.Init);
-        
+        CreateFields(CreateType.Default);
     }
 
     public void ResetValuesToDefault()
     {
-        CreateFields(CreateType.Init);
+        CreateFields(CreateType.Default);
     }
 
     public void SetValuesToLastGenerated()
@@ -243,13 +267,11 @@ public class WorldBorderWindow : EditorWindow
         }
 
     }
-    private static EventCallback<ChangeEvent<bool>> OnPixelatedChanged;
-
 }
 
 public enum CreateType
 {
-    Init,
+    Default,
     Saved
 }
 
