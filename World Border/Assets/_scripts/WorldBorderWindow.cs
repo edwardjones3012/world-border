@@ -122,6 +122,7 @@ public class WorldBorderWindow : EditorWindow
         Toggle _pixelatedToggle = new Toggle(label: "Pixelated");
         _pixelatedToggle.value = createType == CreateType.Default ? GetBoolFromFloat(_defaultPixelated) : GetBoolFromFloat(PlayerPrefs.GetFloat("pixelated"));
         _pixelatedToggle.name = "pixelated";
+        _pixelatedToggle.RegisterValueChangedCallback(OnPixelatedChange);
         rootVisualElement.Add(_pixelatedToggle);
 
         // PIXELATION
@@ -130,13 +131,15 @@ public class WorldBorderWindow : EditorWindow
         _pixelationField.visible = _pixelatedToggle.value;
         _pixelationField.name = "pixelation";
         _pixelationField.AddToClassList("unity-integer-field__indent");
+        _pixelationField.RegisterValueChangedCallback(OnPixelationChange);
+
         rootVisualElement.Add(_pixelationField);
-        _pixelatedToggle.RegisterValueChangedCallback(UpdatePixelationFieldVisibility);
 
         // LINE WIDTH
-        IntegerField _lineWidthField = new IntegerField(label: "Line Width");
+        SliderInt _lineWidthField = new SliderInt(label: "Line Width", start: 1, end: 9);
         _lineWidthField.value = createType == CreateType.Default ? (int)_defaultLineWidth : (int)PlayerPrefs.GetFloat("lineWidth");
         _lineWidthField.name = "lineWidth";
+        _lineWidthField.RegisterValueChangedCallback(OnLineWidthChange);
         rootVisualElement.Add(_lineWidthField);
 
         // HORIZONTAL DISTORTION
@@ -255,7 +258,9 @@ public class WorldBorderWindow : EditorWindow
         CreateFields(CreateType.Saved);
     }
 
-    void UpdatePixelationFieldVisibility(ChangeEvent<bool> evt)
+
+    #region Update Fields
+    void OnPixelatedChange(ChangeEvent<bool> evt)
     {
         IEnumerable<VisualElement> visualElements = rootVisualElement.hierarchy.Children();
         foreach (VisualElement ve in visualElements)
@@ -265,8 +270,21 @@ public class WorldBorderWindow : EditorWindow
                 ve.visible = evt.newValue;
             }
         }
-
+        if (evt.newValue == true) WorldBorderGenerator.UpdateShader("Boundary Pixelated");
+        else WorldBorderGenerator.UpdateShader("Boundary");
     }
+
+    void OnLineWidthChange(ChangeEvent<int> evt)
+    {
+        WorldBorderGenerator.UpdateFloat("_LineWidth", evt.newValue);
+    }
+
+    void OnPixelationChange(ChangeEvent<int> evt)
+    {
+        WorldBorderGenerator.UpdateFloat("_Pixelation", evt.newValue);
+    }
+
+    #endregion
 }
 
 public enum CreateType

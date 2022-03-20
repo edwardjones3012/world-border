@@ -80,6 +80,28 @@ public static class WorldBorderGenerator
         }
     }
 
+    public static void UpdateFloat(string property, float value)
+    {
+        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
+
+        if (borders.Length == 0) return;
+        MeshRenderer meshRenderer = borders[0].GetComponent<MeshRenderer>();
+
+        if (meshRenderer.sharedMaterial.HasProperty(property))
+        {
+            meshRenderer.sharedMaterial.SetFloat(property, value);
+        }
+    }
+
+    public static void UpdateShader(string newShader)
+    {
+        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
+
+        if (borders.Length == 0) return;
+        MeshRenderer meshRenderer = borders[0].GetComponent<MeshRenderer>();
+        meshRenderer.material = (Material)Resources.Load(newShader);
+    }
+
     private static Vector2[] GenerateUVs(float height, float radius)
     {
         List<Vector2> uvs = new List<Vector2>()
