@@ -1,10 +1,8 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine.UIElements;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+using UnityEngine.UIElements;
 
 public class WorldBorderWindow : EditorWindow
 {
@@ -32,7 +30,7 @@ public class WorldBorderWindow : EditorWindow
         window.maxSize = new Vector2(500, 1000);
     }
 
-    private void CreateFields(CreateType createType)
+    private void CreateFields(CreateType createType, bool save = true)
     {
         rootVisualElement.Clear();
         // HEADER IMAGE
@@ -176,6 +174,7 @@ public class WorldBorderWindow : EditorWindow
         Toggle _centerVerticalToggle = new Toggle(label: "Center Vertical");
         _centerVerticalToggle.name = "centerVertical";
         _centerVerticalToggle.value = createType == CreateType.Default ? GetBoolFromFloat(_defaultCenterVertical) : GetBoolFromFloat(PlayerPrefs.GetFloat("centerVertical"));
+        _centerVerticalToggle.RegisterValueChangedCallback(OnVerticalCenterChange);
         rootVisualElement.Add(_centerVerticalToggle);
 
         // GENERATE BUTTON
@@ -184,21 +183,25 @@ public class WorldBorderWindow : EditorWindow
         _generateButton.AddToClassList("button_top");
         _generateButton.clicked += () =>
         {
-            PlayerPrefs.SetFloat("height", _heightField.value);
-            PlayerPrefs.SetFloat("radius", _radiusField.value);
-            PlayerPrefs.SetFloat("pixelated", _pixelatedToggle.value == false ? 0 : 1);
-            PlayerPrefs.SetFloat("pixelation", _pixelationField.value);
-            PlayerPrefs.SetFloat("speed", _speedField.value);
-            PlayerPrefs.SetString("nearColor", ExtractRGBA(_nearColorField.value));
-            PlayerPrefs.SetString("farColor", ExtractRGBA(_farColorField.value));
-            PlayerPrefs.SetFloat("minDistance", _minDistanceField.value);
-            PlayerPrefs.SetFloat("maxDistance", _maxDistanceField.value);
-            PlayerPrefs.SetFloat("nearPoint", _nearPointField.value);
-            PlayerPrefs.SetFloat("lineWidth", _lineWidthField.value);
-            PlayerPrefs.SetFloat("horizontalDistortion", _horizontalDistortionField.value);
-            PlayerPrefs.SetFloat("verticalDirection", (VerticalDirection)_verticalDirectionField.value == VerticalDirection.Up ? 0 : 1);
-            PlayerPrefs.SetFloat("horizontalDirection", (HorizontalDirection)_horizontalDistortionField.value == HorizontalDirection.Left ? 0 : 1);
-            PlayerPrefs.SetFloat("centerVertical", _centerVerticalToggle.value == false ? 0 : 1);
+            if (save)
+            {
+                PlayerPrefs.SetFloat("height", _heightField.value);
+                PlayerPrefs.SetFloat("tempHeight", _heightField.value);
+                PlayerPrefs.SetFloat("radius", _radiusField.value);
+                PlayerPrefs.SetFloat("pixelated", _pixelatedToggle.value == false ? 0 : 1);
+                PlayerPrefs.SetFloat("pixelation", _pixelationField.value);
+                PlayerPrefs.SetFloat("speed", _speedField.value);
+                PlayerPrefs.SetString("nearColor", ExtractRGBA(_nearColorField.value));
+                PlayerPrefs.SetString("farColor", ExtractRGBA(_farColorField.value));
+                PlayerPrefs.SetFloat("minDistance", _minDistanceField.value);
+                PlayerPrefs.SetFloat("maxDistance", _maxDistanceField.value);
+                PlayerPrefs.SetFloat("nearPoint", _nearPointField.value);
+                PlayerPrefs.SetFloat("lineWidth", _lineWidthField.value);
+                PlayerPrefs.SetFloat("horizontalDistortion", _horizontalDistortionField.value);
+                PlayerPrefs.SetFloat("verticalDirection", (VerticalDirection)_verticalDirectionField.value == VerticalDirection.Up ? 0 : 1);
+                PlayerPrefs.SetFloat("horizontalDirection", (HorizontalDirection)_horizontalDistortionField.value == HorizontalDirection.Left ? 0 : 1);
+                PlayerPrefs.SetFloat("centerVertical", _centerVerticalToggle.value == false ? 0 : 1);
+            }
             
             BorderProperties borderProperties = new BorderProperties(height: _heightField.value, radius: _radiusField.value,
                 pixelated: _pixelatedToggle.value, pixelation: _pixelationField.value,
@@ -282,6 +285,11 @@ public class WorldBorderWindow : EditorWindow
     void OnPixelationChange(ChangeEvent<int> evt)
     {
         WorldBorderGenerator.UpdateFloat("_Pixelation", evt.newValue);
+    }
+
+    void OnVerticalCenterChange(ChangeEvent<bool> evt)
+    {
+        WorldBorderGenerator.UpdateCenteredPosition(evt.newValue);
     }
 
     #endregion

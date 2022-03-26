@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -43,6 +41,11 @@ public static class WorldBorderGenerator
         meshRenderer.sharedMaterial.SetFloat("_HorizontalDistortion", borderProperties.HorizontalDistortion);
         meshRenderer.sharedMaterial.SetFloat("_VerticalDirection", (float)borderProperties.VerticalDirection);
         meshRenderer.sharedMaterial.SetFloat("_HorizontalDirection", (float)borderProperties.HorizontalDirection);
+    }
+
+    private static void CreateMesh()
+    {
+
     }
 
     private static void CreateTag(string tag)
@@ -91,6 +94,30 @@ public static class WorldBorderGenerator
         {
             meshRenderer.sharedMaterial.SetFloat(property, value);
         }
+    }
+
+    public static void UpdateCenteredPosition(bool value)
+    {
+        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
+
+        if (borders.Length == 0) return;
+        Transform t = borders[0].GetComponent<Transform>();
+        MeshRenderer meshRenderer = borders[0].GetComponent<MeshRenderer>();
+        int height = (int)PlayerPrefs.GetFloat("tempHeight", 12);
+
+        t.position = value? new Vector3(0, -height/ 2, 0) : Vector3.zero;
+    }
+
+    public static void UpdateHeight(bool value)
+    {
+        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
+
+        if (borders.Length == 0) return;
+        Transform t = borders[0].GetComponent<Transform>();
+        MeshRenderer meshRenderer = borders[0].GetComponent<MeshRenderer>();
+        int height = (int)PlayerPrefs.GetFloat("tempHeight", 12);
+
+        t.position = value ? new Vector3(0, -height / 2, 0) : Vector3.zero;
     }
 
     public static void UpdateShader(string newShader)

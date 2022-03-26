@@ -28,7 +28,7 @@ Material:
     - _ColourStart: 0.156
     - _HorizontalDirection: 0
     - _HorizontalDistortion: 0
-    - _LineWidth: 5
+    - _LineWidth: 3
     - _MaxColor: 0.8
     - _MaxDistance: 15
     - _MinColor: 0.2
@@ -36,9 +36,9 @@ Material:
     - _NearPoint: 1
     - _Pixelation: 8
     - _Pixellation: 256
-    - _Speed: 3
+    - _Speed: 0
     - _Value: 1
-    - _VerticalDirection: 0
+    - _VerticalDirection: 1
     - _Wave: 0
     - _XWave: 0
     - _YWave: 0
