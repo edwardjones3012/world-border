@@ -179,7 +179,7 @@ public class WorldBorderWindow : EditorWindow
         EnumField _horizontalDirectionField = new EnumField(label: "Horizontal Direction", HorizontalDirection.Left);
         _horizontalDirectionField.name = "horizontalDirection";
         _horizontalDirectionField.value = createType == CreateType.Default ? _defaultHorizontalDirection : (HorizontalDirection)PlayerPrefs.GetFloat("horizontalDirection");
-        _verticalDirectionField.RegisterValueChangedCallback(OnHorizontalDirectionChange);
+        _horizontalDirectionField.RegisterValueChangedCallback(OnHorizontalDirectionChange);
 
         rootVisualElement.Add(_horizontalDirectionField);
 
