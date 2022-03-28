@@ -8,17 +8,38 @@ public static class WorldBorderGenerator
     {
         CreateTag("World Border");
         RemoveOtherBorders();
+        MeshData meshData = CreateMesh(borderProperties.Height, borderProperties.Radius);
 
+        meshData.GameObject.transform.position = borderProperties.CenterVertical ? new Vector3(0, -borderProperties.Height / 2, 0) : Vector3.zero;
+
+        string shaderName = borderProperties.Pixelated ? "Boundary Pixelated" : "Boundary";
+        meshData.MeshRenderer.material = (Material)Resources.Load(shaderName);
+
+        if (borderProperties.Pixelated) meshData.MeshRenderer.sharedMaterial.SetFloat("_Pixelation", borderProperties.Pixelation);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_Speed", borderProperties.Speed);
+        meshData.MeshRenderer.sharedMaterial.SetColor("_NearColor", borderProperties.NearColor);
+        meshData.MeshRenderer.sharedMaterial.SetColor("_FarColor", borderProperties.FarColor);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_MinDistance", borderProperties.MinDistance);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_MaxDistance", borderProperties.MaxDistance);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_NearPoint", borderProperties.NearPoint);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_LineWidth", borderProperties.LineWidth);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_HorizontalDistortion", borderProperties.HorizontalDistortion);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_VerticalDirection", (float)borderProperties.VerticalDirection);
+        meshData.MeshRenderer.sharedMaterial.SetFloat("_HorizontalDirection", (float)borderProperties.HorizontalDirection);
+
+    }
+
+    private static MeshData CreateMesh(float height, float radius)
+    {
         Mesh _mesh = new Mesh();
         _mesh.name = "World Border (Mesh)";
-        _mesh.vertices = GenerateVertices(borderProperties.Height, borderProperties.Radius);
+        _mesh.vertices = GenerateVertices(height, radius);
         _mesh.triangles = GenerateTriangles();
         _mesh.RecalculateBounds();
         _mesh.RecalculateNormals();
-        _mesh.SetUVs(0, GenerateUVs(borderProperties.Height, borderProperties.Radius));
+        _mesh.SetUVs(0, GenerateUVs(height, radius));
 
         GameObject border = new GameObject("World Border");
-        border.transform.position = borderProperties.CenterVertical ? new Vector3(0, -borderProperties.Height / 2, 0) : Vector3.zero;
         border.tag = "World Border";
 
         MeshFilter meshFilter = border.AddComponent<MeshFilter>();
@@ -27,25 +48,14 @@ public static class WorldBorderGenerator
 
         MeshCollider meshCollider = border.AddComponent(typeof(MeshCollider)) as MeshCollider;
 
-        string shaderName = borderProperties.Pixelated ? "Boundary Pixelated" : "Boundary";
-        meshRenderer.material = (Material)Resources.Load(shaderName);
+        MeshData meshData = new MeshData();
+        meshData.MeshCollider = meshCollider;
+        meshData.Mesh = _mesh;
+        meshData.MeshFilter = meshFilter;
+        meshData.MeshRenderer = meshRenderer;
+        meshData.GameObject = border;
 
-        if (borderProperties.Pixelated) meshRenderer.sharedMaterial.SetFloat("_Pixelation", borderProperties.Pixelation);
-        meshRenderer.sharedMaterial.SetFloat("_Speed", borderProperties.Speed);
-        meshRenderer.sharedMaterial.SetColor("_NearColor", borderProperties.NearColor);
-        meshRenderer.sharedMaterial.SetColor("_FarColor", borderProperties.FarColor);
-        meshRenderer.sharedMaterial.SetFloat("_MinDistance", borderProperties.MinDistance);
-        meshRenderer.sharedMaterial.SetFloat("_MaxDistance", borderProperties.MaxDistance);
-        meshRenderer.sharedMaterial.SetFloat("_NearPoint", borderProperties.NearPoint);
-        meshRenderer.sharedMaterial.SetFloat("_LineWidth", borderProperties.LineWidth);
-        meshRenderer.sharedMaterial.SetFloat("_HorizontalDistortion", borderProperties.HorizontalDistortion);
-        meshRenderer.sharedMaterial.SetFloat("_VerticalDirection", (float)borderProperties.VerticalDirection);
-        meshRenderer.sharedMaterial.SetFloat("_HorizontalDirection", (float)borderProperties.HorizontalDirection);
-    }
-
-    private static void CreateMesh()
-    {
-
+        return meshData;
     }
 
     private static void CreateTag(string tag)
@@ -102,22 +112,21 @@ public static class WorldBorderGenerator
 
         if (borders.Length == 0) return;
         Transform t = borders[0].GetComponent<Transform>();
-        MeshRenderer meshRenderer = borders[0].GetComponent<MeshRenderer>();
         int height = (int)PlayerPrefs.GetFloat("tempHeight", 12);
-
         t.position = value? new Vector3(0, -height/ 2, 0) : Vector3.zero;
     }
 
-    public static void UpdateHeight(bool value)
+    public static void UpdateHeight(float newHeight)
     {
-        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
+        int radius = (int)PlayerPrefs.GetFloat("radius", 5);
 
+        CreateMesh(newHeight, radius);
+
+        GameObject[] borders = GameObject.FindGameObjectsWithTag("World Border");
         if (borders.Length == 0) return;
         Transform t = borders[0].GetComponent<Transform>();
-        MeshRenderer meshRenderer = borders[0].GetComponent<MeshRenderer>();
-        int height = (int)PlayerPrefs.GetFloat("tempHeight", 12);
 
-        t.position = value ? new Vector3(0, -height / 2, 0) : Vector3.zero;
+        PlayerPrefs.SetFloat("tempHeight", newHeight);
     }
 
     public static void UpdateShader(string newShader)

@@ -64,14 +64,16 @@ public class WorldBorderWindow : EditorWindow
         //HEIGHT
         IntegerField _heightField = new IntegerField(label: "Height");
         _heightField.name = "height";
-        _heightField.value = createType == CreateType.Default ? (int)_defaultHeight : (int)PlayerPrefs.GetFloat("height"); 
+        _heightField.value = createType == CreateType.Default ? (int)_defaultHeight : (int)PlayerPrefs.GetFloat("height");
+        _heightField.RegisterValueChangedCallback(OnHeightChange);
         rootVisualElement.Add(_heightField);
         VisualElementStyleSheetSet set = _heightField.styleSheets;
-
+        
         // RADIUS
         IntegerField _radiusField = new IntegerField(label: "Radius");
-        _radiusField.value = createType == CreateType.Default ? (int)_defaultRadius : (int)PlayerPrefs.GetFloat("radius");
         _radiusField.name = "radius";
+        _radiusField.value = createType == CreateType.Default ? (int)_defaultRadius : (int)PlayerPrefs.GetFloat("radius");
+        _radiusField.RegisterValueChangedCallback(OnRadiusChange);
         rootVisualElement.Add(_radiusField);
 
         Label _colorLabel = new Label(text: "COLOR");
@@ -82,12 +84,14 @@ public class WorldBorderWindow : EditorWindow
         ColorField _nearColorField = new ColorField("Near Color");
         _nearColorField.value = createType == CreateType.Default ? _defaultNearColor : ConvertToColor(PlayerPrefs.GetString("nearColor"));
         _nearColorField.name = "nearColor";
+        _nearColorField.RegisterValueChangedCallback(OnNearColorChange);
         rootVisualElement.Add(_nearColorField);
 
         // FAR COLOR
         ColorField _farColorField = new ColorField("Far Color");
         _farColorField.value = createType == CreateType.Default ? _defaultFarColor : ConvertToColor(PlayerPrefs.GetString("farColor"));
         _farColorField.name = "farColor";
+        _farColorField.RegisterValueChangedCallback(OnFarColorChange);
         rootVisualElement.Add(_farColorField);
 
         Label _distanceLabel = new Label(text: "DISTANCE");
@@ -98,18 +102,21 @@ public class WorldBorderWindow : EditorWindow
         IntegerField _nearPointField = new IntegerField("Near Point");
         _nearPointField.value = createType == CreateType.Default ? (int)_defaultNearPoint : (int)PlayerPrefs.GetFloat("nearPoint");
         _nearPointField.name = "nearPoint";
+        _nearPointField.RegisterValueChangedCallback(OnNearPointChange);
         rootVisualElement.Add(_nearPointField);
 
         // MIN DISTANCE
         IntegerField _minDistanceField = new IntegerField(label: "Min Distance");
         _minDistanceField.value = createType == CreateType.Default ? (int)_defaultMinDistance : (int)PlayerPrefs.GetFloat("minDistance");
         _minDistanceField.name = "minDistance";
+        _minDistanceField.RegisterValueChangedCallback(OnMinDistanceChange);
         rootVisualElement.Add(_minDistanceField);
 
         // MAX DISTANCE
         IntegerField _maxDistanceField = new IntegerField(label: "Max Distance");
         _maxDistanceField.value = createType == CreateType.Default ? (int)_defaultMaxDistance : (int)PlayerPrefs.GetFloat("maxDistance");
         _maxDistanceField.name = "maxDistance";
+        _maxDistanceField.RegisterValueChangedCallback(OnMaxDistanceChange);
         rootVisualElement.Add(_maxDistanceField);
 
         Label _patternLabel = new Label(text: "PATTERN");
@@ -145,6 +152,7 @@ public class WorldBorderWindow : EditorWindow
         _horizontalDistortionField.value = createType == CreateType.Default ? (int)_defaultHorizontalDistortion : (int)PlayerPrefs.GetFloat("horizontalDistortion");
         _horizontalDistortionField.name = "horizontalDistortion";
         rootVisualElement.Add(_horizontalDistortionField);
+        _horizontalDistortionField.RegisterValueChangedCallback(OnHorizontalDistortionChange);
 
         Label _miscLabel = new Label(text: "MISC");
         _miscLabel.AddToClassList("label_header");
@@ -154,6 +162,7 @@ public class WorldBorderWindow : EditorWindow
         IntegerField _speedField = new IntegerField(label: "Speed");
         _speedField.value = createType == CreateType.Default ? (int)_defaultSpeed : (int)PlayerPrefs.GetFloat("speed");
         _speedField.name = "speed";
+        _speedField.RegisterValueChangedCallback(OnSpeedChange);
         rootVisualElement.Add(_speedField);
 
         // could maybe use minmax field and get each end?
@@ -162,12 +171,16 @@ public class WorldBorderWindow : EditorWindow
         EnumField _verticalDirectionField = new EnumField(label: "Vertical Direction", VerticalDirection.Down);
         _verticalDirectionField.name = "verticalDirection";
         _verticalDirectionField.value = createType == CreateType.Default ? _defaultVerticalDirection : (VerticalDirection)PlayerPrefs.GetFloat("verticalDirection");
+        _verticalDirectionField.RegisterValueChangedCallback(OnVerticalDirectionChange);
+        
         rootVisualElement.Add(_verticalDirectionField);
 
         // HORIZONTAL DIRECTION
         EnumField _horizontalDirectionField = new EnumField(label: "Horizontal Direction", HorizontalDirection.Left);
         _horizontalDirectionField.name = "horizontalDirection";
         _horizontalDirectionField.value = createType == CreateType.Default ? _defaultHorizontalDirection : (HorizontalDirection)PlayerPrefs.GetFloat("horizontalDirection");
+        _verticalDirectionField.RegisterValueChangedCallback(OnHorizontalDirectionChange);
+
         rootVisualElement.Add(_horizontalDirectionField);
 
         // CENTER VERTICAL
@@ -188,21 +201,47 @@ public class WorldBorderWindow : EditorWindow
                 PlayerPrefs.SetFloat("height", _heightField.value);
                 PlayerPrefs.SetFloat("tempHeight", _heightField.value);
                 PlayerPrefs.SetFloat("radius", _radiusField.value);
+                PlayerPrefs.SetFloat("tempRadius", _radiusField.value);
                 PlayerPrefs.SetFloat("pixelated", _pixelatedToggle.value == false ? 0 : 1);
+                PlayerPrefs.SetFloat("tempPixelated", _pixelatedToggle.value==false?0:1);
+
                 PlayerPrefs.SetFloat("pixelation", _pixelationField.value);
+                PlayerPrefs.SetFloat("tempPixelation", _pixelationField.value);
+
                 PlayerPrefs.SetFloat("speed", _speedField.value);
+                PlayerPrefs.SetFloat("tempSpeed", _speedField.value);
+
                 PlayerPrefs.SetString("nearColor", ExtractRGBA(_nearColorField.value));
+                PlayerPrefs.SetString("tempNearColor", ExtractRGBA(_nearColorField.value));
+
                 PlayerPrefs.SetString("farColor", ExtractRGBA(_farColorField.value));
+                PlayerPrefs.SetString("tempFarColor", ExtractRGBA(_farColorField.value));
+
                 PlayerPrefs.SetFloat("minDistance", _minDistanceField.value);
+                PlayerPrefs.SetFloat("tempMinDistance", _minDistanceField.value);
+
                 PlayerPrefs.SetFloat("maxDistance", _maxDistanceField.value);
+                PlayerPrefs.SetFloat("tempMaxDistance", _maxDistanceField.value);
+
                 PlayerPrefs.SetFloat("nearPoint", _nearPointField.value);
+                PlayerPrefs.SetFloat("tempNearPoint", _nearPointField.value);
+
                 PlayerPrefs.SetFloat("lineWidth", _lineWidthField.value);
+                PlayerPrefs.SetFloat("tempLineWidth", _lineWidthField.value);
+
                 PlayerPrefs.SetFloat("horizontalDistortion", _horizontalDistortionField.value);
+                PlayerPrefs.SetFloat("tempHorizontalDistortion", _horizontalDistortionField.value);
+
                 PlayerPrefs.SetFloat("verticalDirection", (VerticalDirection)_verticalDirectionField.value == VerticalDirection.Up ? 0 : 1);
+                PlayerPrefs.SetFloat("tempVerticalDirection", (VerticalDirection)_verticalDirectionField.value == VerticalDirection.Up ? 0 : 1);
+
                 PlayerPrefs.SetFloat("horizontalDirection", (HorizontalDirection)_horizontalDistortionField.value == HorizontalDirection.Left ? 0 : 1);
+                PlayerPrefs.SetFloat("tempHorizontalDirection", (HorizontalDirection)_horizontalDistortionField.value == HorizontalDirection.Left ? 0 : 1);
+
                 PlayerPrefs.SetFloat("centerVertical", _centerVerticalToggle.value == false ? 0 : 1);
+                PlayerPrefs.SetFloat("tempCenterVertical", _centerVerticalToggle.value == false ? 0 : 1);
             }
-            
+
             BorderProperties borderProperties = new BorderProperties(height: _heightField.value, radius: _radiusField.value,
                 pixelated: _pixelatedToggle.value, pixelation: _pixelationField.value,
                 speed: _speedField.value, nearColor: _nearColorField.value, farColor: _farColorField.value,
@@ -213,6 +252,30 @@ public class WorldBorderWindow : EditorWindow
                 centerVertical: _centerVerticalToggle.value);
             WorldBorderGenerator.Generate(borderProperties);
         };
+    }
+
+    private void GenerateFromTemporary()
+    {
+        float height = PlayerPrefs.GetFloat("tempHeight", _defaultHeight);
+        float radius = PlayerPrefs.GetFloat("tempRadius", _defaultRadius);
+        float pixelated = PlayerPrefs.GetFloat("tempPixelated", _defaultPixelated);
+        float pixelation = PlayerPrefs.GetFloat("tempPixelation", _defaultPixelation);
+        float speed = PlayerPrefs.GetFloat("tempSpeed", _defaultSpeed);
+        string nearColor = PlayerPrefs.GetString("tempNearColor", "1-0-0-0");
+        string farColor = PlayerPrefs.GetString("tempfarColor", "0-0-1-0");
+        float minDistance = PlayerPrefs.GetFloat("tempMinDistance", _defaultMinDistance);
+        float maxDistance = PlayerPrefs.GetFloat("tempMaxDistance", _defaultMaxDistance);
+        float nearPoint = PlayerPrefs.GetFloat("tempNearPoint", _defaultNearPoint);
+        float lineWidth = PlayerPrefs.GetFloat("tempLineWidth", _defaultLineWidth);
+        float horizontalDistortion = PlayerPrefs.GetFloat("tempHorizontalDistortion", _defaultHorizontalDistortion);
+        VerticalDirection verticalDirection = (VerticalDirection)PlayerPrefs.GetFloat("tempVerticalDirection", 0);
+        HorizontalDirection horizontalDirection = (HorizontalDirection)PlayerPrefs.GetFloat("tempHorizontalDirection", 0);
+        float centerVertical = PlayerPrefs.GetFloat("tempCenterVertical", _defaultCenterVertical);
+
+        BorderProperties borderProperties = new BorderProperties(height: height, radius: radius, pixelated: pixelated==1, pixelation: (int)pixelation, speed: (int)speed, nearColor: ConvertToColor(nearColor), 
+            farColor: ConvertToColor(farColor), minDistance: minDistance, maxDistance: maxDistance, lineWidth: (int)lineWidth, nearPoint: (int)nearPoint,
+            horizontalDistortion: (int)horizontalDistortion, verticalDirection: verticalDirection, horizontalDirection: horizontalDirection, centerVertical: centerVertical == 0 ? false : true);
+        WorldBorderGenerator.Generate(borderProperties);
     }
 
     private bool GetBoolFromFloat(float val)
@@ -265,6 +328,8 @@ public class WorldBorderWindow : EditorWindow
     #region Update Fields
     void OnPixelatedChange(ChangeEvent<bool> evt)
     {
+        PlayerPrefs.SetFloat("tempPixelated", evt.newValue ? 1:0);
+
         IEnumerable<VisualElement> visualElements = rootVisualElement.hierarchy.Children();
         foreach (VisualElement ve in visualElements)
         {
@@ -275,23 +340,153 @@ public class WorldBorderWindow : EditorWindow
         }
         if (evt.newValue == true) WorldBorderGenerator.UpdateShader("Boundary Pixelated");
         else WorldBorderGenerator.UpdateShader("Boundary");
+        GenerateFromTemporary();
     }
 
     void OnLineWidthChange(ChangeEvent<int> evt)
     {
+        PlayerPrefs.SetFloat("tempLineWidth", evt.newValue);
+
         WorldBorderGenerator.UpdateFloat("_LineWidth", evt.newValue);
     }
 
     void OnPixelationChange(ChangeEvent<int> evt)
     {
+        PlayerPrefs.SetFloat("tempPixelation", evt.newValue);
+
         WorldBorderGenerator.UpdateFloat("_Pixelation", evt.newValue);
     }
 
     void OnVerticalCenterChange(ChangeEvent<bool> evt)
     {
+        PlayerPrefs.SetFloat("tempCenterVertical", evt.newValue?1:0);
+
         WorldBorderGenerator.UpdateCenteredPosition(evt.newValue);
     }
+    void OnHeightChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
 
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+
+        PlayerPrefs.SetFloat("tempHeight", value);
+        GenerateFromTemporary();
+    }
+
+    void OnRadiusChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempRadius", value);
+        GenerateFromTemporary();
+    }
+
+    void OnSpeedChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempSpeed", value);
+        GenerateFromTemporary();
+    }
+
+    void OnMinDistanceChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempMinDistance", value);
+        GenerateFromTemporary();
+    }
+    void OnMaxDistanceChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempMaxDistance", value);
+        GenerateFromTemporary();
+    }
+    void OnNearPointChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempNearPoint", value);
+        GenerateFromTemporary();
+    }
+
+    void OnHorizontalDistortionChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempHorizontalDistortion", value);
+        GenerateFromTemporary();
+    }
+    
+    void OnVerticalDirectionChange(ChangeEvent<System.Enum> evt)
+    {
+        var value = (VerticalDirection)evt.newValue;
+        PlayerPrefs.SetFloat("tempVerticalDirection", (float)value);
+        GenerateFromTemporary();
+    }
+
+    void OnHorizontalDirectionChange(ChangeEvent<System.Enum> evt)
+    {
+        var value = (HorizontalDirection)evt.newValue;
+        PlayerPrefs.SetFloat("tempHorizontalDirection", (float)value);
+        GenerateFromTemporary();
+    }
+
+    void OnCenterVerticalChange(ChangeEvent<int> evt)
+    {
+        int value = evt.newValue;
+
+        if (evt.newValue < 1)
+        {
+            value = 1;
+        }
+        PlayerPrefs.SetFloat("tempCenterVertical", value);
+        GenerateFromTemporary();
+    }
+
+    void OnNearColorChange(ChangeEvent<Color> evt)
+    {
+        Color col = evt.newValue;
+        string c = ExtractRGBA(col);
+        PlayerPrefs.SetString("tempNearColor", c);
+        GenerateFromTemporary();
+    }
+
+    void OnFarColorChange(ChangeEvent<Color> evt)
+    {
+        Color col = evt.newValue;
+        string c = ExtractRGBA(col);
+        PlayerPrefs.SetString("tempFarColor", c);
+        GenerateFromTemporary();
+    }
     #endregion
 }
 
