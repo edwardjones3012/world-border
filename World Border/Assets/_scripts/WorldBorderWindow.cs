@@ -40,7 +40,7 @@ public class WorldBorderWindow : EditorWindow
         rootVisualElement.Add(_headerImage);
 
         // RESET BUTTON
-        Button _resetButton = new Button() { text = "Reset Default Values" };
+        Button _resetButton = new Button() { text = "Reset" };
         rootVisualElement.Add(_resetButton);
         _resetButton.AddToClassList("button_top");
         _resetButton.clicked += () =>
@@ -49,7 +49,7 @@ public class WorldBorderWindow : EditorWindow
         };
 
         // CURRENT RESET BUTTON
-        Button _currentBorderValuesButton = new Button() { text = "Restore Last Generated Values" };
+        Button _currentBorderValuesButton = new Button() { text = "Restore Saved Values" };
         rootVisualElement.Add(_currentBorderValuesButton);
         _currentBorderValuesButton.clicked += () =>
         {
@@ -68,7 +68,7 @@ public class WorldBorderWindow : EditorWindow
         _heightField.RegisterValueChangedCallback(OnHeightChange);
         rootVisualElement.Add(_heightField);
         VisualElementStyleSheetSet set = _heightField.styleSheets;
-        
+
         // RADIUS
         IntegerField _radiusField = new IntegerField(label: "Radius");
         _radiusField.name = "radius";
@@ -172,7 +172,7 @@ public class WorldBorderWindow : EditorWindow
         _verticalDirectionField.name = "verticalDirection";
         _verticalDirectionField.value = createType == CreateType.Default ? _defaultVerticalDirection : (VerticalDirection)PlayerPrefs.GetFloat("verticalDirection");
         _verticalDirectionField.RegisterValueChangedCallback(OnVerticalDirectionChange);
-        
+
         rootVisualElement.Add(_verticalDirectionField);
 
         // HORIZONTAL DIRECTION
@@ -190,8 +190,10 @@ public class WorldBorderWindow : EditorWindow
         _centerVerticalToggle.RegisterValueChangedCallback(OnVerticalCenterChange);
         rootVisualElement.Add(_centerVerticalToggle);
 
+
+
         // GENERATE BUTTON
-        Button _generateButton = new Button() { text = "Generate" };
+        Button _generateButton = new Button() { text = "Save" };
         rootVisualElement.Add(_generateButton);
         _generateButton.AddToClassList("button_top");
         _generateButton.clicked += () =>
@@ -203,7 +205,7 @@ public class WorldBorderWindow : EditorWindow
                 PlayerPrefs.SetFloat("radius", _radiusField.value);
                 PlayerPrefs.SetFloat("tempRadius", _radiusField.value);
                 PlayerPrefs.SetFloat("pixelated", _pixelatedToggle.value == false ? 0 : 1);
-                PlayerPrefs.SetFloat("tempPixelated", _pixelatedToggle.value==false?0:1);
+                PlayerPrefs.SetFloat("tempPixelated", _pixelatedToggle.value == false ? 0 : 1);
 
                 PlayerPrefs.SetFloat("pixelation", _pixelationField.value);
                 PlayerPrefs.SetFloat("tempPixelation", _pixelationField.value);
@@ -262,7 +264,7 @@ public class WorldBorderWindow : EditorWindow
         float pixelation = PlayerPrefs.GetFloat("tempPixelation", _defaultPixelation);
         float speed = PlayerPrefs.GetFloat("tempSpeed", _defaultSpeed);
         string nearColor = PlayerPrefs.GetString("tempNearColor", "1-0-0-0");
-        string farColor = PlayerPrefs.GetString("tempfarColor", "0-0-1-0");
+        string farColor = PlayerPrefs.GetString("tempFarColor", "0-0-1-0");
         float minDistance = PlayerPrefs.GetFloat("tempMinDistance", _defaultMinDistance);
         float maxDistance = PlayerPrefs.GetFloat("tempMaxDistance", _defaultMaxDistance);
         float nearPoint = PlayerPrefs.GetFloat("tempNearPoint", _defaultNearPoint);
@@ -272,7 +274,7 @@ public class WorldBorderWindow : EditorWindow
         HorizontalDirection horizontalDirection = (HorizontalDirection)PlayerPrefs.GetFloat("tempHorizontalDirection", 0);
         float centerVertical = PlayerPrefs.GetFloat("tempCenterVertical", _defaultCenterVertical);
 
-        BorderProperties borderProperties = new BorderProperties(height: height, radius: radius, pixelated: pixelated==1, pixelation: (int)pixelation, speed: (int)speed, nearColor: ConvertToColor(nearColor), 
+        BorderProperties borderProperties = new BorderProperties(height: height, radius: radius, pixelated: pixelated == 1, pixelation: (int)pixelation, speed: (int)speed, nearColor: ConvertToColor(nearColor),
             farColor: ConvertToColor(farColor), minDistance: minDistance, maxDistance: maxDistance, lineWidth: (int)lineWidth, nearPoint: (int)nearPoint,
             horizontalDistortion: (int)horizontalDistortion, verticalDirection: verticalDirection, horizontalDirection: horizontalDirection, centerVertical: centerVertical == 0 ? false : true);
         WorldBorderGenerator.Generate(borderProperties);
@@ -317,18 +319,19 @@ public class WorldBorderWindow : EditorWindow
     public void ResetValuesToDefault()
     {
         CreateFields(CreateType.Default);
+        UpdateAllTemporaryValues();
     }
 
     public void SetValuesToLastGenerated()
     {
         CreateFields(CreateType.Saved);
+        UpdateAllTemporaryValues();
     }
-
 
     #region Update Fields
     void OnPixelatedChange(ChangeEvent<bool> evt)
     {
-        PlayerPrefs.SetFloat("tempPixelated", evt.newValue ? 1:0);
+        PlayerPrefs.SetFloat("tempPixelated", evt.newValue ? 1 : 0);
 
         IEnumerable<VisualElement> visualElements = rootVisualElement.hierarchy.Children();
         foreach (VisualElement ve in visualElements)
@@ -341,6 +344,72 @@ public class WorldBorderWindow : EditorWindow
         if (evt.newValue == true) WorldBorderGenerator.UpdateShader("Boundary Pixelated");
         else WorldBorderGenerator.UpdateShader("Boundary");
         GenerateFromTemporary();
+    }
+
+    private VisualElement FindVisualElement(string name)
+    {
+        IEnumerable<VisualElement> visualElements = rootVisualElement.hierarchy.Children();
+        foreach (VisualElement ve in visualElements)
+        {
+            if (ve.name == name)
+            {
+                return ve;
+            }
+        }
+        return null;
+    }
+
+    private void UpdateAllTemporaryValues()
+    {
+        UpdateTemporaryValueSliderInt("lineWidth", "tempLineWidth");
+
+        UpdateTemporaryValueInteger("height", "tempHeight");
+        UpdateTemporaryValueInteger("radius", "tempRadius");
+        UpdateTemporaryValueInteger("nearPoint", "tempNearPoint");
+        UpdateTemporaryValueInteger("minDistance", "tempMinDistance");
+        UpdateTemporaryValueInteger("maxDistance", "tempMaxDistance");
+        UpdateTemporaryValueInteger("pixelation", "tempPixelation");
+        UpdateTemporaryValueInteger("horizontalDistortion", "tempHorizontalDistortion");
+        UpdateTemporaryValueInteger("speed", "tempSpeed");
+
+        UpdateTemporaryValueColor("nearColor", "tempNearColor");
+        UpdateTemporaryValueColor("farColor", "tempFarColor");
+
+        UpdateTemporaryValueToggle("centerVertical", "tempCenterVertical");
+        UpdateTemporaryValueToggle("pixelated", "tempPixelated");
+
+        GenerateFromTemporary();
+    }
+
+    private void UpdateTemporaryValueInteger(string name, string tempName)
+    {
+        VisualElement element = FindVisualElement(name);
+        IntegerField field = (IntegerField)element;
+
+        PlayerPrefs.SetFloat(tempName, field.value);
+    }
+
+    private void UpdateTemporaryValueColor(string name, string tempName)
+    {
+        VisualElement element = FindVisualElement(name);
+        ColorField field = (ColorField)element;
+        PlayerPrefs.SetString(tempName, ExtractRGBA(field.value));
+    }
+
+    private void UpdateTemporaryValueSliderInt(string name, string tempName)
+    {
+        VisualElement element = FindVisualElement(name);
+        SliderInt field = (SliderInt)element;
+
+        PlayerPrefs.SetFloat(tempName, field.value);
+    }
+
+    private void UpdateTemporaryValueToggle(string name, string tempName)
+    {
+        VisualElement element = FindVisualElement(name);
+        Toggle field = (Toggle)element;
+
+        PlayerPrefs.SetFloat(tempName, field.value ? 1:0);
     }
 
     void OnLineWidthChange(ChangeEvent<int> evt)
@@ -392,9 +461,9 @@ public class WorldBorderWindow : EditorWindow
     {
         int value = evt.newValue;
 
-        if (evt.newValue < 1)
+        if (evt.newValue < 0)
         {
-            value = 1;
+            value = 0;
         }
         PlayerPrefs.SetFloat("tempSpeed", value);
         GenerateFromTemporary();
