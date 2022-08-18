@@ -26,7 +26,6 @@ public static class WorldBorderGenerator
         meshData.MeshRenderer.sharedMaterial.SetFloat("_HorizontalDistortion", borderProperties.HorizontalDistortion);
         meshData.MeshRenderer.sharedMaterial.SetFloat("_VerticalDirection", (float)borderProperties.VerticalDirection);
         meshData.MeshRenderer.sharedMaterial.SetFloat("_HorizontalDirection", (float)borderProperties.HorizontalDirection);
-
     }
 
     private static MeshData CreateMesh(float height, float radius)

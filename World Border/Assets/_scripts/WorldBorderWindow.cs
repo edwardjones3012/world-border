@@ -122,6 +122,8 @@ public class WorldBorderWindow : EditorWindow
         _maxDistanceField.RegisterValueChangedCallback(OnMaxDistanceChange);
         rootVisualElement.Add(_maxDistanceField);
 
+        // could maybe use minmax field and get each end?
+
         Label _patternLabel = new Label(text: "PATTERN");
         _patternLabel.AddToClassList("label_header");
         rootVisualElement.Add(_patternLabel);
@@ -167,8 +169,6 @@ public class WorldBorderWindow : EditorWindow
         _speedField.name = "speed";
         _speedField.RegisterValueChangedCallback(OnSpeedChange);
         rootVisualElement.Add(_speedField);
-
-        // could maybe use minmax field and get each end?
 
         // VERTICAL DIRECTION
         EnumField _verticalDirectionField = new EnumField(label: "Vertical Direction", VerticalDirection.Down);
