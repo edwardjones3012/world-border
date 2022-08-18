@@ -28,17 +28,17 @@ Material:
     - _ColourStart: 0.156
     - _HorizontalDirection: 0
     - _HorizontalDistortion: 0
-    - _LineWidth: 4
+    - _LineWidth: 3
     - _MaxColor: 0.8
-    - _MaxDistance: 33
+    - _MaxDistance: 96
     - _MinColor: 0.2
     - _MinDistance: 2
-    - _NearPoint: 19
+    - _NearPoint: 3
     - _Pixelation: 8
     - _Pixellation: 256
-    - _Speed: 13
+    - _Speed: 12
     - _Value: 1
-    - _VerticalDirection: 1
+    - _VerticalDirection: 0
     - _Wave: 0
     - _XWave: 0
     - _YWave: 0
@@ -46,7 +46,7 @@ Material:
     - _ColourA: {r: 0, g: 0.765018, b: 1, a: 1}
     - _ColourB: {r: 0, g: 0, b: 0, a: 1}
     - _DangerColor: {r: 1, g: 1, b: 1, a: 1}
-    - _FarColor: {r: 1, g: 0.1921569, b: 0.9694667, a: 1}
-    - _NearColor: {r: 0.5023305, g: 1, b: 0.1372549, a: 1}
+    - _FarColor: {r: 0.1556604, g: 0.7558534, b: 1, a: 1}
+    - _NearColor: {r: 1, g: 0.08018869, b: 0.08018869, a: 1}
     - _StandardColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

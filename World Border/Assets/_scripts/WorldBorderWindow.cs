@@ -30,12 +30,15 @@ public class WorldBorderWindow : EditorWindow
         window.maxSize = new Vector2(500, 1000);
     }
 
-    private void CreateFields(CreateType createType, bool save = true)
+    private bool CreateFields(CreateType createType, bool save = true)
     {
+        // validate
+        if (createType == CreateType.Saved && PlayerPrefs.GetFloat("height") == 0) return false;
+
         rootVisualElement.Clear();
         // HEADER IMAGE
         Image _headerImage = new Image();
-        _headerImage.image = (Texture)Resources.Load("world-border-header-placeholder-6");
+        _headerImage.image = (Texture)Resources.Load("world-border-header-placeholder");
         _headerImage.scaleMode = ScaleMode.ScaleToFit;
         rootVisualElement.Add(_headerImage);
 
@@ -190,8 +193,6 @@ public class WorldBorderWindow : EditorWindow
         _centerVerticalToggle.RegisterValueChangedCallback(OnVerticalCenterChange);
         rootVisualElement.Add(_centerVerticalToggle);
 
-
-
         // GENERATE BUTTON
         Button _generateButton = new Button() { text = "Save" };
         rootVisualElement.Add(_generateButton);
@@ -202,8 +203,10 @@ public class WorldBorderWindow : EditorWindow
             {
                 PlayerPrefs.SetFloat("height", _heightField.value);
                 PlayerPrefs.SetFloat("tempHeight", _heightField.value);
+
                 PlayerPrefs.SetFloat("radius", _radiusField.value);
                 PlayerPrefs.SetFloat("tempRadius", _radiusField.value);
+
                 PlayerPrefs.SetFloat("pixelated", _pixelatedToggle.value == false ? 0 : 1);
                 PlayerPrefs.SetFloat("tempPixelated", _pixelatedToggle.value == false ? 0 : 1);
 
@@ -254,6 +257,8 @@ public class WorldBorderWindow : EditorWindow
                 centerVertical: _centerVerticalToggle.value);
             WorldBorderGenerator.Generate(borderProperties);
         };
+
+        return true;
     }
 
     private void GenerateFromTemporary()
@@ -313,7 +318,8 @@ public class WorldBorderWindow : EditorWindow
     {
         StyleSheet styleSheet = (StyleSheet)EditorGUIUtility.Load("UIEditorStyleSheet.uss");
         rootVisualElement.styleSheets.Add(styleSheet);
-        CreateFields(CreateType.Default);
+        bool restoreSavedSuccess = CreateFields(CreateType.Saved);
+        if (!restoreSavedSuccess) CreateFields(CreateType.Default);
     }
 
     public void ResetValuesToDefault()
